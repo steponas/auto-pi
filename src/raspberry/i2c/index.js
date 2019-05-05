@@ -6,9 +6,6 @@ const { waitFor } = require('../../common/helpers');
 const logger = require('../../common/log');
 const Relays = require('./relays');
 
-// const STOP_COUNT = 10;
-// const STOP_DELAY = 2000;
-
 /**
  * Generate the bw_tool command to be run.
  */
