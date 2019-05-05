@@ -1,0 +1,25 @@
+{
+  "name": "home-relay",
+  "version": "0.0.1",
+  "description": "Home automation through I2C relays on Raspberry Pi",
+  "main": "index.js",
+  "author": "Steponas Dauginis <steponas.dauginis@gmail.com>",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "stop-relays": "node ./src/cli/stop-relays.js",
+    "toggle": "node ./src/cli/toggle.js",
+    "temp": "node ./src/cli/temp.js",
+    "lint": "eslint src/",
+    "test": "jest"
+  },
+  "dependencies": {
+    "node-dht-sensor": "^0.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "jest": "^24.7.1"
+  }
+}

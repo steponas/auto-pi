@@ -1,0 +1,9 @@
+Changing the BigRelay address
+=============================
+
+The address of a (Big)Relay on the bus can be changed by issuing three commands:
+> bw_tool -I -D /dev/i2c-1 -a 9c -W f1:55:b
+> bw_tool -I -D /dev/i2c-1 -a 9c -W f2:aa:b
+> bw_tool -I -D /dev/i2c-1 -a 9c -W f0:9b:b # new addr is 9b!
+# DONE!
+
