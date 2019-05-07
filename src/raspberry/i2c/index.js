@@ -17,7 +17,7 @@ const execute = async (cmd) => {
   const unlock = await gpioLock();
   let result = null;
   try {
-    const { stdout, stderr } = await exec(cmd);
+    const { stdout } = await exec(cmd);
     result = stdout;
   } catch (err) {
     logger.log(`Error executing: ${err}`);

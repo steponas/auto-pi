@@ -11,7 +11,8 @@
     "toggle": "node ./src/cli/toggle.js",
     "temp": "node ./src/cli/temp.js",
     "lint": "eslint src/",
-    "test": "jest"
+    "test": "jest",
+    "build": "webpack --config src/config/webpack.js"
   },
   "dependencies": {
     "node-dht-sensor": "^0.2.0"
@@ -20,6 +21,8 @@
     "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
-    "jest": "^24.7.1"
+    "jest": "^24.7.1",
+    "webpack": "^4.30.0",
+    "webpack-cli": "^3.3.2"
   }
 }
