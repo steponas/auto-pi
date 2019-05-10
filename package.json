@@ -12,8 +12,10 @@
     "temp": "node ./src/cli/temp.js",
     "lint": "eslint src/",
     "test": "jest",
-    "build": "webpack --config src/config/webpack.js",
-    "dev": "webpack-dev-server --config src/config/webpack.js"
+    "build": "webpack --config src/config/webpack.prod.js",
+    "dev": "concurrently \"yarn dev:watch\" \"yarn dev:server\"",
+    "dev:server": "node ./src/server/server-dev.js",
+    "dev:watch": "webpack --config src/config/webpack.dev.js --watch"
   },
   "dependencies": {
     "express": "^4.16.4",
@@ -28,15 +30,13 @@
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.5",
     "babel-plugin-styled-components": "^1.10.0",
+    "concurrently": "^4.1.0",
     "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-react": "^7.13.0",
-    "html-webpack-plugin": "^3.2.0",
     "jest": "^24.7.1",
     "webpack": "^4.30.0",
-    "webpack-cli": "^3.3.2",
-    "webpack-dev-middleware": "^3.6.2",
-    "webpack-dev-server": "^3.3.1"
+    "webpack-cli": "^3.3.2"
   }
 }
