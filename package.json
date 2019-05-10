@@ -13,11 +13,13 @@
     "lint": "eslint src/",
     "test": "jest",
     "build": "webpack --config src/config/webpack.prod.js",
-    "dev": "concurrently \"yarn dev:watch\" \"yarn dev:server\"",
-    "dev:server": "node ./src/server/server-dev.js",
+    "start": "yarn build && yarn server",
+    "dev": "concurrently \"yarn dev:watch\" \"yarn server\"",
+    "server": "node ./src/server/server.js",
     "dev:watch": "webpack --config src/config/webpack.dev.js --watch"
   },
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
     "cron": "^1.7.1",
     "express": "^4.16.4",
     "node-dht-sensor": "^0.2.0",
@@ -27,8 +29,10 @@
   },
   "devDependencies": {
     "@babel/core": "^7.4.4",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
     "@babel/preset-env": "^7.4.4",
     "@babel/preset-react": "^7.0.0",
+    "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",
     "babel-plugin-styled-components": "^1.10.0",
     "concurrently": "^4.1.0",

@@ -1,20 +1,9 @@
 /* eslint import/no-extraneous-dependencies:0 */
 const webpack = require('webpack');
-const path = require('path');
-// const HtmlWebpackPlugin = require('html-webpack-plugin');
+const prodConfig = require('./webpack.prod.js');
 
-module.exports = {
-  entry: './src/client/index.js',
+module.exports = Object.assign({}, prodConfig, {
   mode: 'development',
-  module: {
-    rules: [
-      {
-        test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader',
-      },
-    ],
-  },
   devServer: {
     contentBase: './dist',
     hotOnly: true,
@@ -23,9 +12,4 @@ module.exports = {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
   ],
-  output: {
-    filename: 'main.js',
-    path: path.resolve(__dirname, '../../dist'),
-    publicPath: '/',
-  },
-};
+});
