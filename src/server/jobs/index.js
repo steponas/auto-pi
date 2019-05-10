@@ -13,7 +13,7 @@ const setupJob = (name, cronTime, jobFn, runOnInit = true) => {
     runOnInit,
   });
 
-  log('CRON', `Added cronjob ${name} run ? ${runOnInit}`);
+  log('CRON', `added cronjob ${name}`);
 };
 
 // Start jobs
