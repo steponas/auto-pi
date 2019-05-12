@@ -1,4 +1,4 @@
-/* eslint no-await-in-loop:0 */
+/* eslint no-await-in-loop:0 no-bitwise:0 */
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const { gpioLock } = require('../../common/gpio');
@@ -38,11 +38,11 @@ const toggleRelay = async (num, isOn) => {
       return false;
     }
 
-    const num = parseInt(data, 16);
+    const allRelaysInt = parseInt(data, 16);
     const relayBit = 1 << (relayNum - 1);
     const expResult = isOn ? relayBit : 0;
 
-    return (num & relayBit) === expResult;
+    return (allRelaysInt & relayBit) === expResult;
   };
 
   const cmd = bwToolWrite(boardAddr, relayAddr.toString(16), isOn ? '01' : '00');
