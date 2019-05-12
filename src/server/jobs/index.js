@@ -19,3 +19,4 @@ const setupJob = (name, cronTime, jobFn, runOnInit = true) => {
 // Start jobs
 require('./read-temp')(setupJob);
 require('./front-grass-often')(setupJob);
+require('./grass-sprinklers')(setupJob);
