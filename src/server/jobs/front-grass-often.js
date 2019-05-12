@@ -10,7 +10,7 @@ const jobName = 'FrontLawnOften';
 // one sprinkler is on. Other relays might be on, but only one
 // of the sprinklers can be on due to water pressure issues.
 const waterFrontLawn = async () => {
-  log(jobName, 'starting sprintlers');
+  log(jobName, 'starting sprinklers');
   await toggleRelay(FRONT_LAWN, true);
   await waitFor(10 * MINUTES);
   await toggleRelay(FRONT_LAWN, false);
