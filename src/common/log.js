@@ -1,3 +1,6 @@
 module.exports = {
-  log: (...args) => console.log(...args),
+  log: (...args) => {
+    const ts = (new Date()).toISOString();
+    console.log(`[${ts}] `, ...args);
+  },
 };
