@@ -22,12 +22,17 @@ it('should run start the sprinkler, wait, and turn if off', async () => {
 
   let name;
   let runFn;
-  setupCron((pName, cron, pRunFn) => {
+  let startNow;
+  setupCron((pName, cron, pRunFn, pStartNow) => {
     name = pName;
     runFn = pRunFn;
+    startNow = pStartNow;
   });
 
   await runFn();
+
+  // Should not be started right away
+  expect(startNow).toBe(false);
 
   expect(name).toEqual('Grass Sprinklers');
 
