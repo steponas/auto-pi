@@ -1,38 +1,14 @@
 /* eslint no-await-in-loop:0 no-bitwise:0 */
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
-const { gpioLock } = require('../../common/gpio');
 const { waitFor } = require('../../common/helpers');
-const logger = require('../../common/log');
 const Relays = require('./relays');
-
-/**
- * Generate the bw_tool command to be run.
- */
-const bwToolWrite = (board, cmd, bit) => `bw_tool -I -D /dev/i2c-1 -a ${board} -W ${cmd}:${bit}:b`;
-const readRelays = board => `bw_tool -I -D /dev/i2c-1 -a ${board} -R 10:b`;
-
-const execute = async (cmd) => {
-  logger.log(`Executing "${cmd}"`);
-  const unlock = await gpioLock();
-  let result = null;
-  try {
-    const { stdout } = await exec(cmd);
-    result = stdout;
-  } catch (err) {
-    logger.log(`Error executing: ${err}`);
-  }
-  unlock();
-  return result;
-};
+const { bwToolWrite, bwToolReadRelayState } = require('./bwtool');
 
 const toggleRelay = async (num, isOn) => {
   const { boardAddr, relayAddr, relayNum } = Relays.mapRelay(num);
 
   // Check if the expected command succeeded toggling the relay.
   const check = async () => {
-    const checkCmd = readRelays(boardAddr);
-    const data = await execute(checkCmd);
+    const data = await bwToolReadRelayState(boardAddr);
 
     if (!data) {
       return false;
@@ -45,10 +21,8 @@ const toggleRelay = async (num, isOn) => {
     return (allRelaysInt & relayBit) === expResult;
   };
 
-  const cmd = bwToolWrite(boardAddr, relayAddr.toString(16), isOn ? '01' : '00');
-
   while (true) {
-    await execute(cmd);
+    await bwToolWrite(boardAddr, relayAddr.toString(16), isOn ? '01' : '00');
     await waitFor(1000);
     const ok = await check();
     if (ok) {

@@ -17,6 +17,7 @@ const Relays = {
     throw new Error(`relayNo must be between 1 and 6, got ${relayNo}`);
   },
 
+  // Map a relay number (1..12) to the board, board's relay number and relay's address
   mapRelay(relayNo) {
     if (relayNo < 1 || relayNo > MAX_RELAYS) {
       throw new Error(`Bad relay number "${relayNo}", should be between 1 and ${MAX_RELAYS}`);
