@@ -2,19 +2,19 @@
 const { waitFor } = require('../../common/helpers');
 const Relays = require('./relays');
 const { bwToolWrite, bwToolReadRelayState } = require('./bwtool');
+const Timeouts = require('./timeouts');
 
 const toggleRelay = async (num, isOn) => {
   const { boardAddr, relayAddr, relayNum } = Relays.mapRelay(num);
 
   // Check if the expected command succeeded toggling the relay.
   const check = async () => {
-    const data = await bwToolReadRelayState(boardAddr);
+    const allRelaysInt = await bwToolReadRelayState(boardAddr);
 
-    if (!data) {
+    if (allRelaysInt === null) {
       return false;
     }
 
-    const allRelaysInt = parseInt(data, 16);
     const relayBit = 1 << (relayNum - 1);
     const expResult = isOn ? relayBit : 0;
 
@@ -23,23 +23,32 @@ const toggleRelay = async (num, isOn) => {
 
   while (true) {
     await bwToolWrite(boardAddr, relayAddr.toString(16), isOn ? '01' : '00');
-    await waitFor(1000);
+    await waitFor(Timeouts.BEFORE_RELAY_CHECK);
     const ok = await check();
     if (ok) {
       // The relay is in a good state. We're done.
       break;
     } else {
       // Relay didn't toggle.
-      // Wait 2 seconds before trying the same command again.
-      await waitFor(2000);
+      // Wait before trying the same command again.
+      await waitFor(Timeouts.AFTER_BAD_WRITE);
     }
   }
 };
 
 const turnAllOff = async () => {
+  let state = null;
   for (let i = 1; i <= 12; i += 1) {
-    await toggleRelay(i, false);
-    await waitFor(300);
+    const { boardAddr, relayNum } = Relays.mapRelay(i);
+    const relayBit = 1 << (relayNum - 1);
+
+    if (!state) {
+      state = await bwToolReadRelayState(boardAddr);
+    }
+    if ((state & relayBit) === relayBit) {
+      await toggleRelay(i, false);
+      state = null;
+    }
   }
 };
 

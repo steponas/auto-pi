@@ -34,7 +34,13 @@ const bwToolReadRelayStateCmd = board => `bw_tool -I -D /dev/i2c-1 -a ${board} -
  * @param {Number} board
  * @returns {Number} A byte where each bit represents the state of an relay.
  */
-const bwToolReadRelayState = board => execute(bwToolReadRelayStateCmd(board));
+const bwToolReadRelayState = async (board) => {
+  const data = await execute(bwToolReadRelayStateCmd(board));
+  if (!data) {
+    return null;
+  }
+  return parseInt(data, 16);
+};
 
 module.exports = {
   bwToolWrite,
