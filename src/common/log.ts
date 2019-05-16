@@ -1,15 +1,15 @@
 const Logger = {
-  log: (...args) => {
+  log: (...args): void => {
     const ts = (new Date()).toISOString();
     // eslint-disable-next-line no-console
     console.log(`[${ts}] `, ...args);
   },
-  debug: (...args) => {
+  debug: (...args): void => {
     Logger.log(...args);
   },
-  error: (...args) => {
+  error: (...args): void => {
     Logger.log(...args);
   },
 };
 
-module.exports = Logger;
+export default Logger;
