@@ -34,5 +34,5 @@ const waterFrontLawn = async () => {
 };
 
 module.exports = (setupJob) => {
-  setupJob(jobName, '0 0 4 1,4 * *', waterFrontLawn, false);
+  setupJob(jobName, '0 0 4 * * 1,4', waterFrontLawn, false);
 };
