@@ -13,7 +13,7 @@ require('./jobs');
 app.use('/pi', piCommands);
 
 // Static file routing
-app.get('/', (req, res) => res.sendFile(join(__dirname, '../../dist/index.html')));
+app.get('/', (req, res) => res.sendFile(join(__dirname, '../client/static/index.html')));
 app.get('/main.js', (req, res) => res.sendFile(join(__dirname, '../../dist/main.js')));
 
 app.listen(3000, () => {
