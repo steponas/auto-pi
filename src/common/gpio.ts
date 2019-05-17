@@ -7,31 +7,40 @@
 //
 // A simple mutex lock with a wait time.
 
-const { waitFor } = require('./helpers');
+import { waitFor } from './helpers';
+
+interface Resolver {
+  (releaseLock): void;
+}
 
 const WAIT = 100;
-const requests = [];
+const requests: Resolver[] = [];
 let waiting = false;
 
-const execute = async () => {
-  if (waiting || requests.length === 0) {
+const execute = async (): Promise<void> => {
+  if (waiting) {
     return;
   }
+
+  const resolveNext = requests.shift();
+  if (!resolveNext) {
+    return;
+  }
+
   waiting = true;
 
-  const { resolve: giveLock } = requests.shift();
-  const releaseLock = async () => {
+  const releaseLock = async (): Promise<void> => {
     await waitFor(WAIT);
     waiting = false;
     execute();
   };
 
-  giveLock(releaseLock);
+  resolveNext(releaseLock);
 };
 
-const gpioLock = () => new Promise((resolve) => {
+const gpioLock = (): Promise<void> => new Promise((resolve): void => {
   // Should resolve only when we are next in line.
-  requests.push({ resolve });
+  requests.push(resolve);
   execute();
 });
 

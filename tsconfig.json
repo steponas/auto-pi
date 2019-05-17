@@ -1,14 +1,25 @@
 {
   "compilerOptions": {
-      "outDir": "./dist",
-      "allowJs": true,
-      "module": "es6",
-      "jsx": "react",
-      "strictNullChecks": true,
-      "target": "es6",
-      "moduleResolution": "node"
+    "outDir": "./dist",
+    "allowJs": true,
+    "module": "es6",
+    "jsx": "react",
+    "strictNullChecks": true,
+    "target": "es6",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "server/*": ["src/server/*"],
+      "client/*": ["src/client/*"],
+      "common/*": ["src/common/*"],
+      "raspberry/*": ["src/raspberry/*"]
+    },
+    "plugins": [
+      { "name": "typescript-tslint-plugin" }
+    ]
   },
   "include": [
-      "./src/**/*"
+    "src"
   ]
 }

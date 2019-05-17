@@ -1,10 +1,10 @@
-const { toggleRelay } = require('../../raspberry/i2c');
-const { log } = require('../../common/log');
-const {
+import { toggleRelay } from 'raspberry/i2c';
+import { log } from 'common/log';
+import {
   FRONT_LAWN, BACK_LAWN_1, BACK_LAWN_2, SLOPE,
-} = require('../../config/relay-names');
-const { waitFor } = require('../../common/helpers');
-const { MINUTES, HOURS } = require('../../common/time');
+} from 'src/config/relay-names';
+import { waitFor }from 'common/helpers';
+import { MINUTES, HOURS } from 'common/time';
 
 const jobName = 'Grass Sprinklers';
 
@@ -18,7 +18,7 @@ const config = [
 // TODO we need a locking/error mechanism so that no more than
 // one sprinkler is on. Other relays might be on, but only one
 // of the sprinklers can be on due to water pressure issues.
-const waterFrontLawn = async () => {
+const waterFrontLawn = async (): Promise<void> => {
   log(jobName, 'starting sprinklers');
 
   for (let i = 0; i < config.length; i += 1) {
@@ -33,6 +33,6 @@ const waterFrontLawn = async () => {
   log(jobName, 'turning sprinklers off');
 };
 
-module.exports = (setupJob) => {
+module.exports = (setupJob): void => {
   setupJob(jobName, '0 0 4 * * 1,4', waterFrontLawn, false);
 };
