@@ -2,7 +2,7 @@
   "compilerOptions": {
     "outDir": "./dist",
     "allowJs": true,
-    "module": "es6",
+    "module": "commonjs",
     "jsx": "react",
     "strictNullChecks": true,
     "target": "es6",

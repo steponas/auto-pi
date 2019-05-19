@@ -14,4 +14,7 @@ module.exports = Object.assign({}, common, {
     filename: 'server.js',
     path: path.resolve(__dirname, '../dist'),
   },
+  node: {
+    __dirname: false,
+  }
 });
