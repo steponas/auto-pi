@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
 import { getPiData } from '../common/fetch';
+import _ from 'lodash';
 
 // Inspiration and svg from https://codepen.io/dustindowell/pen/rxjxVp
 
@@ -18,27 +18,37 @@ const numberSvgMap = {
   '-': [0, 0, 0, 1, 0, 0, 0],
 };
 
-const gStyle = isActive => ({
+interface SvgStyle {
+  opacity: number;
+};
+const gStyle = (isActive): SvgStyle => ({
   opacity: isActive ? 1 : 0.08,
 });
-const getLineStyle = (number, gPos) => {
+const getLineStyle = (number, gPos): SvgStyle => {
   const map = numberSvgMap[number];
   return gStyle(map[gPos] === 1);
 };
 
-const Clock = ({ temp }) => {
-  const isNum = typeof temp === 'number';
-  const minus = isNum ? temp < 0 : false;
+interface ClockProps {
+  temp?: number;
+};
 
-  let num1;
-  let num2;
-  if (isNum) {
-    const strTemp = String(Math.abs(temp)).padLeft(2, 0);
-    num1 = parseInt(strTemp[0], 0);
-    num2 = parseInt(strTemp[1], 0);
+const Clock = ({ temp }: ClockProps): JSX.Element => {
+  let minus: boolean;
+  let num1: string;
+  let num2: string;
+  if (typeof temp === 'number') {
+    let strTemp = String(Math.abs(temp));
+    if (strTemp.length < 2) {
+      strTemp = `0${strTemp}`;
+    }
+    num1 = strTemp[0];
+    num2 = strTemp[1];
+    minus = temp < 0;
   } else {
     num1 = '-';
     num2 = '-';
+    minus = false;
   }
 
   return (
@@ -69,20 +79,22 @@ const Clock = ({ temp }) => {
     </svg>
   );
 };
-Clock.propTypes = {
-  temp: PropTypes.number,
+
+interface State {
+  temp?: number;
 };
 
-export default class Temp extends React.Component {
-  state = {
-    temp: null,
-  };
+export default class Temp extends React.Component<{}, State> {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
 
-  componentDidMount() {
+  componentDidMount(): void {
     this.fetchData();
   }
 
-  async fetchData() {
+  async fetchData(): Promise<void> {
     try {
       const data = await getPiData('temp');
       this.setState({ temp: data.temp });
@@ -91,8 +103,8 @@ export default class Temp extends React.Component {
     }
   }
 
-  render() {
-    const temp = this.state.temp || 'Loading...';
+  render(): JSX.Element {
+    const temp = this.state.temp;
 
     return <div>
       <Clock temp={temp} />

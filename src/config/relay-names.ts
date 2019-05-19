@@ -1,4 +1,4 @@
-module.exports = {
+export {
   FRONT_LAWN: 1,
   SLOPE: 2,
   BACK_LAWN_1: 3,

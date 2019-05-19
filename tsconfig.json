@@ -17,7 +17,8 @@
     },
     "plugins": [
       { "name": "typescript-tslint-plugin" }
-    ]
+    ],
+    "skipLibCheck": true
   },
   "include": [
     "src"

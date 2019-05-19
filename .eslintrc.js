@@ -21,7 +21,8 @@ module.exports = {
   rules: {
     'no-await-in-loop': 0,
     'import/prefer-default-export': 0,
-    '@typescript-eslint/indent': ['error', 2]
+    '@typescript-eslint/indent': ['error', 2],
+    '@typescript-eslint/explicit-member-accessibility': 0,
   },
   settings:  {
     react:  {
