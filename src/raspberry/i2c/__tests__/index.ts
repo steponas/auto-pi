@@ -1,16 +1,23 @@
 /* eslint no-bitwise:0 */
-const i2c = require('../index');
-const Relays = require('../relays');
-const mockBwtool = require('../bwtool');
+/* eslint @typescript-eslint/explicit-function-return-type:0 */
+import { turnAllOff } from '../index';
+import Relays from '../relays';
+import { bwToolWrite, bwToolReadRelayState } from '../bwtool';
 
 jest.mock('../bwtool', () => ({
   bwToolWrite: jest.fn(),
   bwToolReadRelayState: jest.fn(),
 }));
 jest.mock('../timeouts', () => ({
-  BEFORE_RELAY_CHECK: 0,
-  AFTER_BAD_WRITE: 0,
+  __esModule: true,
+  default: {
+    BEFORE_RELAY_CHECK: 0,
+    AFTER_BAD_WRITE: 0,
+  }
 }));
+
+const mockedBwToolWrite = bwToolWrite as any as jest.Mock<typeof bwToolWrite>;
+const mockedBwToolReadRelayState = bwToolReadRelayState as any as jest.Mock<typeof bwToolReadRelayState>;
 
 // Relays for board 1
 const RELAY_2_ADDR = (1 << 1);
@@ -30,7 +37,8 @@ it('should turn those relays off which are on currently', async () => {
       { addr: RELAY_2_ADDR, tries: 1 },
     ],
   };
-  mockBwtool.bwToolReadRelayState.mockImplementation(async (board) => {
+  // @ts-ignore
+  mockedBwToolReadRelayState.mockImplementation(async (board) => {
     const calls = relayCalls[board];
     let byte = 0;
     for (let i = 0; i < calls.length; i += 1) {
@@ -44,20 +52,23 @@ it('should turn those relays off which are on currently', async () => {
   });
 
   const writeParams = [];
-  mockBwtool.bwToolWrite.mockImplementation(async (board, relay, bit) => {
+  // @ts-ignore
+  mockedBwToolWrite.mockImplementation(async (board, relay, bit) => {
+    // @ts-ignore
     writeParams.push([board, relay, bit]);
 
     if (bit === '00') {
       // If the request is to turn off the board, decrease the counter
       const relayBit = 1 << (parseInt(relay, 10) - 20);
       const ref = relayCalls[board].find(({ addr }) => addr === relayBit);
+      // @ts-ignore
       ref.tries -= 1;
     } else {
       throw new Error('Did not expect that a relay would be turned on');
     }
   });
 
-  await i2c.turnAllOff();
+  await turnAllOff();
 
   expect(writeParams).toEqual([
     [Relays.RELAY_1, (0x21).toString(16), '00'],
