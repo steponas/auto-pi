@@ -1,5 +1,7 @@
 import cron from 'cron';
 import { log } from 'common/log';
+import readTempJob from './read-temp';
+import grassSprinklersJob from './grass-sprinklers';
 
 const jobs = {};
 const TIMEZONE = 'Europe/Vilnius';
@@ -18,7 +20,6 @@ const setupJob = (name, cronTime, jobFn, runOnInit = true): void => {
 
 // Start jobs
 export default (): void => {
-  require('./read-temp')(setupJob);
-  require('./front-grass-often')(setupJob);
-  require('./grass-sprinklers')(setupJob);
+  readTempJob(setupJob);
+  grassSprinklersJob(setupJob);
 };

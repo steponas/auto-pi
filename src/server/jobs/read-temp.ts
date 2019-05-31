@@ -15,6 +15,6 @@ const readTemp = async (): Promise<void> => {
   log(jobName, `read done - temp ${temp}, humidity ${humidity}`);
 };
 
-module.exports = (setupJob): void => {
+export default (setupJob): void => {
   setupJob(jobName, '0 */5 * * * *', readTemp);
 };
