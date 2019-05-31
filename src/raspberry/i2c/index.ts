@@ -1,14 +1,14 @@
 /* eslint no-await-in-loop:0 no-bitwise:0 */
-const { waitFor } = require('../../common/helpers');
-const Relays = require('./relays');
-const { bwToolWrite, bwToolReadRelayState } = require('./bwtool');
-const Timeouts = require('./timeouts');
+import { waitFor } from '../../common/helpers';
+import Relays, { RelayNum } from './relays';
+import { bwToolWrite, bwToolReadRelayState } from './bwtool';
+import Timeouts from './timeouts';
 
-const toggleRelay = async (num, isOn) => {
+export const toggleRelay = async (num, isOn): Promise<void> => {
   const { boardAddr, relayAddr, relayNum } = Relays.mapRelay(num);
 
   // Check if the expected command succeeded toggling the relay.
-  const check = async () => {
+  const check = async (): Promise<boolean> => {
     const allRelaysInt = await bwToolReadRelayState(boardAddr);
 
     if (allRelaysInt === null) {
@@ -36,10 +36,10 @@ const toggleRelay = async (num, isOn) => {
   }
 };
 
-const turnAllOff = async () => {
-  let state = null;
+export const turnAllOff = async (): Promise<void> => {
+  let state;
   for (let i = 1; i <= 12; i += 1) {
-    const { boardAddr, relayNum } = Relays.mapRelay(i);
+    const { boardAddr, relayNum } = Relays.mapRelay(i as RelayNum);
     const relayBit = 1 << (relayNum - 1);
 
     if (!state) {
@@ -50,9 +50,4 @@ const turnAllOff = async () => {
       state = null;
     }
   }
-};
-
-module.exports = {
-  toggleRelay,
-  turnAllOff,
 };

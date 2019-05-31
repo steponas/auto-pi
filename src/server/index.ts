@@ -8,7 +8,7 @@ import setupJobs from './jobs';
 const app = express();
 
 // Start cron jobs
-// setupJobs();
+setupJobs();
 
 // Raspberry Pi command API
 app.use('/pi', piCommands);

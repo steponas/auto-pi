@@ -1,9 +1,10 @@
-const setupCron = require('../grass-sprinklers');
-const mockedi2c = require('../../../raspberry/i2c');
-const mockedHelpers = require('../../../common/helpers');
-const {
+/* eslint @typescript-eslint/explicit-function-return-type:0 */
+import setupCron from '../grass-sprinklers';
+import { toggleRelay } from '../../../raspberry/i2c';
+import { waitFor } from '../../../common/helpers';
+import {
   FRONT_LAWN, BACK_LAWN_1, BACK_LAWN_2, SLOPE,
-} = require('../../../config/relay-names');
+} from '../../../config/relay-names';
 
 jest.mock('../../../raspberry/i2c', () => ({
   toggleRelay: jest.fn(),
@@ -15,10 +16,15 @@ jest.mock('../../../common/log', () => ({
   log: () => {},
 }));
 
+const mockToggleRelay = toggleRelay as any as jest.Mock<typeof toggleRelay>;
+const mockedWaitFor = waitFor as any as jest.Mock<typeof waitFor>;
+
 it('should run start the sprinkler, wait, and turn if off', async () => {
-  const calls = [];
-  mockedi2c.toggleRelay.mockImplementation((relay, isOn) => calls.push(['relay', relay, isOn]));
-  mockedHelpers.waitFor.mockImplementation(time => calls.push(['wait', time]));
+  const calls: any[] = [];
+  // @ts-ignore
+  mockToggleRelay.mockImplementation((relay, isOn) => calls.push(['relay', relay, isOn]));
+  // @ts-ignore
+  mockedWaitFor.mockImplementation(time => calls.push(['wait', time]));
 
   let name;
   let runFn;

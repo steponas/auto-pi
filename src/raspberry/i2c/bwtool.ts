@@ -1,10 +1,12 @@
 // Interfacing with relays over bw_tool - https://bitwizard.nl/wiki/Bw_tool
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
-const { gpioLock } = require('../../common/gpio');
-const { debug, error } = require('../../common/log');
+import { promisify } from 'util';
+const exec = promisify(require('child_process').exec);
+import { gpioLock } from 'common/gpio';
+import { debug, error } from 'common/log';
 
-const execute = async (cmd) => {
+type ExecuteResult = Promise<string | null>;
+
+const execute = async (cmd): ExecuteResult => {
   debug(`bw_tool: Executing "${cmd}"`);
   const unlock = await gpioLock();
   let result = null;
@@ -18,7 +20,7 @@ const execute = async (cmd) => {
   return result;
 };
 
-const bwToolWriteCmd = (board, cmd, bit) => `bw_tool -I -D /dev/i2c-1 -a ${board} -W ${cmd}:${bit}:b`;
+const bwToolWriteCmd = (board, cmd, bit): string => `bw_tool -I -D /dev/i2c-1 -a ${board} -W ${cmd}:${bit}:b`;
 /**
  * Generate the bw_tool command to be run.
  * @param {Number} board The board address to send command to
@@ -26,23 +28,18 @@ const bwToolWriteCmd = (board, cmd, bit) => `bw_tool -I -D /dev/i2c-1 -a ${board
  * @param {string} bit - 00 or 01 mostly, as hex
  * @returns {Promise<string>} Result of the command
  */
-const bwToolWrite = async (board, cmd, bit) => execute(bwToolWriteCmd(board, cmd, bit));
+export const bwToolWrite = async (board, cmd, bit): ExecuteResult => execute(bwToolWriteCmd(board, cmd, bit));
 
-const bwToolReadRelayStateCmd = board => `bw_tool -I -D /dev/i2c-1 -a ${board} -R 10:b`;
+const bwToolReadRelayStateCmd = (board: string): string => `bw_tool -I -D /dev/i2c-1 -a ${board} -R 10:b`;
 /**
  * Read the state of all relays on the $board
  * @param {Number} board
  * @returns {Number} A byte where each bit represents the state of an relay.
  */
-const bwToolReadRelayState = async (board) => {
+export const bwToolReadRelayState = async (board): Promise<number | null> => {
   const data = await execute(bwToolReadRelayStateCmd(board));
   if (!data) {
     return null;
   }
   return parseInt(data, 16);
-};
-
-module.exports = {
-  bwToolWrite,
-  bwToolReadRelayState,
 };

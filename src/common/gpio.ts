@@ -10,14 +10,14 @@
 import { waitFor } from './helpers';
 
 interface Resolver {
-  (releaseLock): void;
+  (releaseLock: () => Promise<void>): void;
 }
 
 const WAIT = 100;
 const requests: Resolver[] = [];
 let waiting = false;
 
-const execute = async (): Promise<void> => {
+export const execute = async (): Promise<void> => {
   if (waiting) {
     return;
   }
@@ -38,12 +38,8 @@ const execute = async (): Promise<void> => {
   resolveNext(releaseLock);
 };
 
-const gpioLock = (): Promise<void> => new Promise((resolve): void => {
+export const gpioLock = (): Promise<() => Promise<void>> => new Promise((resolve): void => {
   // Should resolve only when we are next in line.
-  requests.push(resolve);
+  requests.push(resolve as () => Promise<void>);
   execute();
 });
-
-module.exports = {
-  gpioLock,
-};

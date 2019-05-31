@@ -13,7 +13,8 @@
       "server/*": ["src/server/*"],
       "client/*": ["src/client/*"],
       "common/*": ["src/common/*"],
-      "raspberry/*": ["src/raspberry/*"]
+      "raspberry/*": ["src/raspberry/*"],
+      "src/*": ["src/*"]
     },
     "plugins": [
       { "name": "typescript-tslint-plugin" }

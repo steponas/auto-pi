@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/explicit-function-return-type:0 */
 const setupCron = require('../front-grass-often');
 const mockedi2c = require('../../../raspberry/i2c');
 const mockedHelpers = require('../../../common/helpers');

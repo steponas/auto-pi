@@ -33,6 +33,6 @@ const waterFrontLawn = async (): Promise<void> => {
   log(jobName, 'turning sprinklers off');
 };
 
-module.exports = (setupJob): void => {
-  setupJob(jobName, '0 0 4 * * 1,4', waterFrontLawn, false);
+export default (setupJob): void => {
+  setupJob(jobName, '0 0 4 * * 1,3,6', waterFrontLawn, false);
 };
