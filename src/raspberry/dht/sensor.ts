@@ -1,20 +1,29 @@
-const sensor = require('node-dht-sensor');
-const { waitFor } = require('../../common/helpers');
-const { log } = require('../../common/log');
-const { gpioLock } = require('../../common/gpio');
+// On not-raspberry env the 'node-dht-sensor' is not found
+// @ts-ignore
+import sensor from 'node-dht-sensor';
+import { waitFor } from 'common/helpers';
+import { log } from 'common/log';
+import { gpioLock } from 'common/gpio';
 
 const TYPE = 11;
 const GPIO = 10;
 
-const readSensor = () => new Promise((resolve, reject) => sensor.read(TYPE, GPIO, (err, temp, humidity) => {
-  if (!err) {
-    resolve({ temp, humidity });
-  } else {
-    reject(err);
-  }
-}));
+interface SensorData {
+  temp: number;
+  humidity: number;
+}
 
-const read = async () => {
+const readSensor = (): Promise<SensorData> => new Promise(
+  (resolve, reject): void => sensor.read(TYPE, GPIO, (err, temp, humidity): void => {
+    if (!err) {
+      resolve({ temp, humidity });
+    } else {
+      reject(err);
+    }
+  })
+);
+
+const read = async (): Promise<SensorData> => {
   const unlock = await gpioLock();
   try {
     const data = await readSensor();
@@ -28,7 +37,8 @@ const read = async () => {
 
 const AVG_READS = 3;
 const WAIT = 1000;
-const readAvg = async () => {
+// Returns the average of some sensor reads
+export const readSensorData = async (): Promise<SensorData> => {
   let reads = 0;
   let temp = 0;
   let humidity = 0;
@@ -59,8 +69,4 @@ const readAvg = async () => {
     temp: Math.round(temp / AVG_READS),
     humidity: Math.round(humidity / AVG_READS),
   };
-};
-
-module.exports = {
-  readSensorData: readAvg,
 };
