@@ -6,6 +6,7 @@ import piCommands from './pi-api';
 import setupJobs from './jobs';
 
 const app = express();
+app.use(express.json())
 
 // Start cron jobs
 setupJobs();

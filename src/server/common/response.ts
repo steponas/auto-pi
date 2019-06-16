@@ -8,7 +8,7 @@ interface SrvResponse {
   } | null;
 };
 
-export const success = (data: any): SrvResponse => ({
+export const success = (data?: any): SrvResponse => ({
   status: true,
   error: null,
   data,
