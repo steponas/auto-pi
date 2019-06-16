@@ -1,38 +1,28 @@
-import { toggleRelay } from 'raspberry/i2c';
-import { log } from 'common/log';
-import {
+const { toggleRelay } = require('../../raspberry/i2c');
+const { log } = require('../../common/log');  
+const {
   FRONT_LAWN, BACK_LAWN_1, BACK_LAWN_2, SLOPE,
-} from 'src/config/relay-names';
-import { waitFor }from 'common/helpers';
-import { MINUTES, HOURS } from 'common/time';
+} = require('../../config/relay-names');
+const { waitFor } = require('../../common/helpers');
+const { HOURS, MINUTES, SECONDS } = require('../../common/time');
 
 const jobName = 'Grass Sprinklers';
 
-const config = [
-  { sprinkler: FRONT_LAWN, time: 10 * MINUTES },
-  { sprinkler: BACK_LAWN_1, time: 10 * MINUTES },
-  { sprinkler: BACK_LAWN_2, time: 10 * MINUTES },
-  { sprinkler: SLOPE, time: 3 * HOURS },
-];
+async function runFrontClose() {
+  await toggleRelay(FRONT_LAWN, true);
+  await waitFor(30 * SECONDS);
 
-// TODO we need a locking/error mechanism so that no more than
-// one sprinkler is on. Other relays might be on, but only one
-// of the sprinklers can be on due to water pressure issues.
-const waterFrontLawn = async (): Promise<void> => {
-  log(jobName, 'starting sprinklers');
+  await toggleRelay(BACK_LAWN_1, true);
+  await waitFor(10 * SECONDS);
 
-  for (let i = 0; i < config.length; i += 1) {
-    const { sprinkler, time } = config[i];
-    log(jobName, `sprinkler ${sprinkler} on`);
-    await toggleRelay(sprinkler, true);
-    await waitFor(time);
+  await toggleRelay(BACK_LAWN_2, true);
+
+  await waitFor(15 * MINUTES);
+
+  const list = [FRONT_LAWN, BACK_LAWN_1, BACK_LAWN_2];
+  for (sprinkler of list) {
     await toggleRelay(sprinkler, false);
-    log(jobName, `sprinkler ${sprinkler} off`);
+    await waitFor(5 * SECONDS);
   }
+}
 
-  log(jobName, 'turning sprinklers off');
-};
-
-export default (setupJob): void => {
-  setupJob(jobName, '0 0 4 * * 1,3,6', waterFrontLawn, false);
-};
