@@ -68,6 +68,6 @@ const waterLawn = async (): Promise<void> => {
   log(jobName, 'done');
 };
 
-module.exports = (setupJob): void => {
+export default (setupJob): void => {
   setupJob(jobName, '0 0 3 * * *', waterLawn, false);
 };
