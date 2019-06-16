@@ -1,6 +1,6 @@
 // On not-raspberry env the 'node-dht-sensor' is not found
 // @ts-ignore
-import sensor from 'node-dht-sensor';
+import * as sensor from 'node-dht-sensor';
 import { waitFor } from 'common/helpers';
 import { log } from 'common/log';
 import { gpioLock } from 'common/gpio';
