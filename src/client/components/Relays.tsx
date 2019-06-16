@@ -1,9 +1,10 @@
 import * as React from 'react';
 import * as _ from 'lodash';
 import styled from 'styled-components';
-import { Row, Col, Switch } from 'antd';
+import { Alert, Row, Col, Switch } from 'antd';
 import { RelayState } from 'raspberry/i2c';
 import { RelayRequest } from 'server/pi-api/relay';
+import { SECONDS } from 'common/time';
 import { getPiData, postPiData } from '../common/fetch';
 import * as relays from '../../config/relay-names';
 
@@ -19,7 +20,11 @@ const Item = styled(Row)`
   border-top: dotted 1px rgba(0, 0, 0, 0.65);
 `;
 
+const REFETCH_TIME = 10 * SECONDS;
+
 export default class Relays extends React.Component<{}, State> {
+  refetchTimeout: number;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -33,14 +38,25 @@ export default class Relays extends React.Component<{}, State> {
     this.fetchData();
   }
 
-  async fetchData(): Promise<void> {
+  componentWillUnmount(): void {
+    if (this.refetchTimeout) {
+      clearTimeout(this.refetchTimeout);
+    }
+  }
+
+  fetchData = async (): Promise<void> => {
+    if (this.refetchTimeout) {
+      clearTimeout(this.refetchTimeout);
+    }
     try {
       const data = await getPiData('relay-state');
-      this.setState({ relayState: data.state });
+      this.setState({ relayState: data.state, stateError: false });
     } catch (err) {
       console.log(err);
       this.setState({ stateError: true });
     }
+
+    this.refetchTimeout = setTimeout(this.fetchData, REFETCH_TIME);
   }
 
   toggleSwitch = async (num: number, isOn: boolean): Promise<void> => {
@@ -51,6 +67,7 @@ export default class Relays extends React.Component<{}, State> {
         targetState: isOn,
       };
       await postPiData('relay', body);
+      this.setState({ postError: undefined });
     } catch (e) {
       this.setState({
         postError: e.message,
@@ -62,13 +79,19 @@ export default class Relays extends React.Component<{}, State> {
   };
 
   render(): JSX.Element {
-    const {relayState} = this.state;
+    const {relayState, stateError, postError } = this.state;
     if (!relayState) {
       return <div>Loading...</div>;
     }
 
     return (
       <div>
+        {stateError && (
+          <Alert type="error" message="Error refetching the state" />
+        )}
+        {postError && (
+          <Alert type="error" message={postError} />
+        )}
         {
           _.map(relays, (num, relayName): JSX.Element => {
             const checked = relayState[num];
