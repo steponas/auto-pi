@@ -1,4 +1,4 @@
 /node_modules
 # Client dist files
 /dist/*
-!/dist/index.html
+!/dist/.gitkeep
