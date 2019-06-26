@@ -2,3 +2,4 @@
 # Client dist files
 /dist/*
 !/dist/.gitkeep
+/src/config/db.ts

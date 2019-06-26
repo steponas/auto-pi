@@ -17,7 +17,7 @@ async function runFrontClose(): Promise<void> {
 
   await toggleRelay(BACK_LAWN_2, true);
 
-  await waitFor(15 * MINUTES);
+  await waitFor(10 * MINUTES);
 
   const list = [FRONT_LAWN, BACK_LAWN_1, BACK_LAWN_2];
   for (let sprinkler of list) {
@@ -69,5 +69,5 @@ const waterLawn = async (): Promise<void> => {
 };
 
 export default (setupJob): void => {
-  setupJob(jobName, '0 0 3 * * *', waterLawn, false);
+  setupJob(jobName, '0 0 3 * * 1,3,5', waterLawn, false);
 };

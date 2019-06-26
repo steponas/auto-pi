@@ -1,6 +1,7 @@
 import { state, KEY_TEMP_SENSOR } from 'server/common/state';
 import { readSensorData } from 'raspberry/dht/sensor';
-import { log } from 'common/log';
+import { log, error } from 'common/log';
+import { storeSensorData } from 'server/store';
 
 const jobName = 'readTemp';
 
@@ -13,6 +14,12 @@ const readTemp = async (): Promise<void> => {
   });
 
   log(jobName, `read done - temp ${temp}, humidity ${humidity}`);
+
+  try {
+    await storeSensorData(temp, humidity);
+  } catch (err) {
+    error(`Could not store temp data: ${err.message}`);
+  }
 };
 
 export default (setupJob): void => {

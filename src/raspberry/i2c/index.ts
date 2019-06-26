@@ -51,3 +51,25 @@ export const turnAllOff = async (): Promise<void> => {
     }
   }
 };
+
+export interface RelayState {
+  [index: number]: boolean;
+};
+// Get state for all board's relays
+export const getState = async(): Promise<RelayState> => {
+  const states = {
+    [Relays.RELAY_1]: await bwToolReadRelayState(Relays.RELAY_1),
+    [Relays.RELAY_2]: await bwToolReadRelayState(Relays.RELAY_2),
+  };
+
+  const stateMap = {};
+  for (let i = 1; i <= 12; i++) {
+    const { boardAddr, relayNum } = Relays.mapRelay(i as RelayNum);
+    const state = states[boardAddr];
+    const relayBit = 1 << (relayNum - 1);
+    stateMap[i] = state ?
+      (state & relayBit) === relayBit :
+      false;
+  }
+  return stateMap;
+};
