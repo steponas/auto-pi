@@ -8,6 +8,8 @@ import { SECONDS } from 'common/time';
 import { getPiData, postPiData } from '../common/fetch';
 import * as relays from '../../config/relay-names';
 
+const {relayNames, ...allRelays} = relays;
+
 interface State {
   relayState?: RelayState;
   stateError: boolean;
@@ -60,7 +62,6 @@ export default class Relays extends React.Component<{}, State> {
   }
 
   toggleSwitch = async (num: number, isOn: boolean): Promise<void> => {
-    console.log(isOn);
     try {
       const body: RelayRequest = {
         relayNum: num,
@@ -93,11 +94,11 @@ export default class Relays extends React.Component<{}, State> {
           <Alert type="error" message={postError} />
         )}
         {
-          _.map(relays, (num, relayName): JSX.Element => {
+          _.map(allRelays, (num): JSX.Element => {
             const checked = relayState[num];
             return (
               <Item key={num}>
-                <Col span={20}>{relayName}</Col>
+                <Col span={20}>{relayNames[num]}</Col>
                 <Col span={4}>
                   <Switch 
                     checked={checked}
