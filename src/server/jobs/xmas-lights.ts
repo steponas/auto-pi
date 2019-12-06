@@ -16,10 +16,10 @@ async function turnOff(): Promise<void> {
 }
 
 export default (setupJob): void => {
-  // Shine in the morning, 7..8
-  setupJob(`${jobName} morning - on`, '0 0 7 * * *', turnOn, false);
-  setupJob(`${jobName} morning - off`, '0 0 8 * * *', turnOff, false);
-  // And in the evening, 16..20
+  // Shine in the morning, 7..8. Only on workdays.
+  setupJob(`${jobName} morning - on`, '0 0 7 * * 1-5', turnOn, false);
+  setupJob(`${jobName} morning - off`, '0 0 8 * * 1-5', turnOff, false);
+  // And in the evening, 16..20. Everyday.
   setupJob(`${jobName} evening - on`, '0 0 16 * * *', turnOn, false);
   setupJob(`${jobName} evening - off`, '0 0 20 * * *', turnOff, false);
 };
