@@ -1,8 +1,9 @@
 import { CronJob } from 'cron';
 import { log } from 'common/log';
 import readTempJob from './read-temp';
-// import grassSprinklersJob from './grass-sprinklers';
-import xmasLights from './xmas-lights';
+import grassSprinklersJob from './grass-sprinklers-simple';
+import greenhouseJob from './greenhouse';
+// import xmasLights from './xmas-lights';
 
 const jobs = {};
 const TIMEZONE = 'Europe/Vilnius';
@@ -23,6 +24,7 @@ const setupJob = (name, cronTime, jobFn, runOnInit = true): void => {
 export default (): void => {
   readTempJob(setupJob);
   // No need for sprinklers during the winter.
-  // grassSprinklersJob(setupJob);
-  xmasLights(setupJob);
+  grassSprinklersJob(setupJob);
+  greenhouseJob(setupJob);
+  // xmasLights(setupJob);
 };
