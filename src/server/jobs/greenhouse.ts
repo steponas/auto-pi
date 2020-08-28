@@ -19,5 +19,5 @@ async function run(): Promise<void> {
 }
 
 export default (setupJob): void => {
-  setupJob(jobName, '0 0 8 * * 1,4,6', run, false);
+  setupJob(jobName, '0 0 8 * * 4', run, false);
 };
