@@ -69,5 +69,5 @@ const waterLawn = async (): Promise<void> => {
 };
 
 export default (setupJob): void => {
-  setupJob(jobName, '0 0 3 * * 1,3,5', waterLawn, false);
+  setupJob(jobName, '0 0 3 * * 2,6', waterLawn, false);
 };
