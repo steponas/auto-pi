@@ -3,4 +3,5 @@ export default {
   username: 'pi',
   password: 'pipw',
   host: 'pihost',
+  port: 3306,
 };

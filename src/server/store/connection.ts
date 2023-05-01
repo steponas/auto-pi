@@ -5,6 +5,7 @@ export default function (): Pool {
   const pool = createPool({
     connectionLimit: 2,
     host: config.host,
+    port: config.port,
     user: config.username,
     password: config.password,
     database: config.dbName,

@@ -5,7 +5,7 @@ import { waitFor } from 'common/helpers';
 import { log } from 'common/log';
 import { gpioLock } from 'common/gpio';
 
-const TYPE = 11;
+const TYPE = 22;
 const GPIO = 10;
 
 interface SensorData {
@@ -36,7 +36,7 @@ const read = async (): Promise<SensorData> => {
 };
 
 const AVG_READS = 3;
-const WAIT = 1000;
+const WAIT = 2500;
 // Returns the average of some sensor reads
 export const readSensorData = async (): Promise<SensorData> => {
   let reads = 0;
