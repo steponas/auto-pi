@@ -1,21 +1,23 @@
 /* eslint @typescript-eslint/no-var-requires:0 */
-const { TsConfigPathsPlugin } = require('awesome-typescript-loader');
+const path = require('path');
 
 module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
-    plugins: [
-      new TsConfigPathsPlugin({ configFileName: `${__dirname}/../tsconfig.json` }),
-    ],
+    alias: {
+      server: path.resolve(__dirname, '../src/server'),
+      client: path.resolve(__dirname, '../src/client'),
+      common: path.resolve(__dirname, '../src/common'),
+      raspberry: path.resolve(__dirname, '../src/raspberry'),
+    }
   },
   module: {
     rules: [
       {
-        test: /\.(t|j)sx?$/, 
-        use: { loader: 'awesome-typescript-loader' },
+        test: /\.(t|j)sx?$/,
+        use: ['babel-loader'],
         exclude: /node_modules/,
       },
-      { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
       {
         test: /\.css$/,
         use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],

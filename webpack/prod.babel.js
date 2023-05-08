@@ -1,9 +1,9 @@
 /* eslint @typescript-eslint/no-var-requires:0 */
 const path = require('path');
-const BrotliPlugin = require('brotli-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 const WebpackAssetsManifest = require('webpack-assets-manifest');
 const common = require('./common');
+const zlib = require("zlib");
 
 module.exports = Object.assign({}, common, {
   entry: {
@@ -11,16 +11,22 @@ module.exports = Object.assign({}, common, {
   },
   mode: 'production',
   output: {
-    filename: '[name]-[hash].js',
+    filename: '[name]-[chunkhash].js',
     path: path.resolve(__dirname, '../dist/client'),
     publicPath: '/',
   },
   plugins: [
-    new BrotliPlugin({
-      asset: '[path].br[query]',
-      test: /\.js$|\.css$|\.html$/,
+    new CompressionPlugin({
+      filename: '[path][base].br',
+      test: /\.(js|css|html|svg)$/,
+      compressionOptions: {
+        params: {
+          [zlib.constants.BROTLI_PARAM_QUALITY]: 11,
+        },
+      },
+      threshold: 10240,
+      minRatio: 0.8,
     }),
-    new CompressionPlugin(),
     new WebpackAssetsManifest(),
   ],
 });

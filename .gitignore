@@ -3,3 +3,4 @@
 /dist/*
 !/dist/.gitkeep
 /src/config/db.ts
+/.idea/
