@@ -6,7 +6,7 @@ interface SensorDataFn {
 }
 
 const QUERY = `INSERT INTO sensor_data SET ?`;
-const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss'
+const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 export default function setup(connPool: Pool): SensorDataFn {
   return (temp: number, humidity: number): Promise<void> => new Promise((resolve, reject): void => {

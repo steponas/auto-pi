@@ -12,6 +12,10 @@ const getCliEntries = () => {
 
   return paths.reduce(
     (map, path) => {
+      if (path[0] === '.') {
+        // Skip .babelrc and friends
+        return map;
+      }
       const [pathName] = path.split('.');
       map[`cli-${pathName}`] = `${cliRoot}/${path}`;
       return map;

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { getPiData } from '../common/fetch';
-import _ from 'lodash';
 
 // Inspiration and svg from https://codepen.io/dustindowell/pen/rxjxVp
 
@@ -31,7 +30,7 @@ const getLineStyle = (number, gPos): SvgStyle => {
 
 interface ClockProps {
   temp?: number;
-};
+}
 
 const Clock = ({ temp }: ClockProps): JSX.Element => {
   let minus: boolean;
@@ -82,7 +81,7 @@ const Clock = ({ temp }: ClockProps): JSX.Element => {
 
 interface State {
   temp?: number;
-};
+}
 
 export default class Temp extends React.Component<{}, State> {
   constructor(props) {

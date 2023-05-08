@@ -15,9 +15,16 @@ app.use(express.json());
 setupJobs();
 
 // Raspberry Pi command API
-app.use('/pi', piCommands);
+app.use(
+  '/pi',
+  (req, res, next) => {
+    res.setHeader('Cache-Control', 'public, max-age=0');
+    next();
+  },
+  piCommands
+);
 
-const assetManifest = readJsonSync(join(__dirname, 'client/manifest.json'));
+const assetManifest = readJsonSync(join(__dirname, 'client/assets-manifest.json'));
 const clientJs = assetManifest['client.js'];
 const clientJsPath = `/static/${clientJs}`;
 const indexHtml = generateTemplate({
