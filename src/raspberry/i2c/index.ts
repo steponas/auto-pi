@@ -1,5 +1,5 @@
 /* eslint no-await-in-loop:0 no-bitwise:0 */
-import { waitFor } from '../../common/helpers';
+import { waitFor } from 'common/helpers';
 import Relays, { RelayNum } from './relays';
 import { bwToolWrite, bwToolReadRelayState } from './bwtool';
 import Timeouts from './timeouts';

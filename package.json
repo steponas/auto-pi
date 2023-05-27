@@ -36,6 +36,7 @@
     "react": "^16.8.6",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^16.8.6",
+    "serialport": "^11.0.0",
     "styled-components": "^4.2.0"
   },
   "devDependencies": {
