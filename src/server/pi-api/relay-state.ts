@@ -1,12 +1,12 @@
 import { success, error } from 'server/common/response';
 import { error as logError } from 'common/log';
-import {SerialRelay} from "raspberry/serial";
+import { RelayStateStore } from 'server/store/relay';
 
-export const getRelayStateHandler = (serial: SerialRelay) => {
+export const getRelayStateHandler = (relays: RelayStateStore) => {
   return async function handleGetRelayState(req, res): Promise<void> {
     try {
       res.json(success({
-        state: await serial.getState()
+        state: await relays.getState()
       }));
     } catch (e) {
       logError('Could not read relay state: %s', e.message);

@@ -40,7 +40,7 @@ export class SerialRelay {
     });
   }
 
-  async _writeWithDrain(...chunks: (String | Buffer)[]) {
+  async _writeWithDrain(...chunks: (string | Buffer)[]) {
     return new Promise<void>((resolve, reject) => {
       for (let c of chunks) {
         this.serialport.write(c);

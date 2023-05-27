@@ -1,13 +1,13 @@
 import { success, error } from 'server/common/response';
 import { error as logError } from 'common/log';
-import {SerialRelay} from "raspberry/serial";
+import {RelayStateStore} from "server/store/relay";
 
 export interface RelayRequest {
   relayNum: number;
   targetState: boolean;
 }
 
-export const getRelayHandler = (serial: SerialRelay) => {
+export const getRelayHandler = (relays: RelayStateStore) => {
   return async function changeRelayHandler(req, res): Promise<void> {
     const data: RelayRequest = req.body;
 
@@ -16,7 +16,7 @@ export const getRelayHandler = (serial: SerialRelay) => {
     }
 
     try {
-      await serial.toggleRelay(data.relayNum, data.targetState);
+      await relays.toggleRelay(data.relayNum, data.targetState);
       res.json(success());
     } catch (e) {
       logError('Could not toggle relay #%s to state %s: %s', data.relayNum, data.targetState, e.message);
