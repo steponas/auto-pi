@@ -5,13 +5,19 @@ import Relays from './Relays';
 import {TempHistory} from './TempHistory';
 
 const Wrapper = styled.div`
-  border: 1px solid black;
+  padding: 20px;
+  background: #edede9;
+  min-height: 100vh;
 `;
 
-const App = (): JSX.Element => <Wrapper>
-  <Temp />
-  <TempHistory />
-  <Relays />
-</Wrapper>;
+const App = (): JSX.Element => (
+  <>
+    <Wrapper>
+      <Temp />
+      <TempHistory />
+      <Relays />
+    </Wrapper>
+  </>
+);
 
 export default App;
