@@ -10,8 +10,7 @@ interface Props {
 
 const DURATIONS = [
   {
-    // TODO set 30
-    time: 0.1,
+    time: 30,
     label: '30 min'
   },
   {

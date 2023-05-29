@@ -10,13 +10,11 @@ export const getPiApiRouter = async () => {
   const serial = new SerialRelay();
   const relayState = await createRelayStore(serial);
   // Turn off relays after the server starts, for a clean state.
-  setTimeout(async () => {
-    try {
-      serial.turnOffAllRelays();
-    } catch (e) {
-      console.error('Initial relay turning off failed: ' + e.message);
-    }
-  }, 1000);
+  try {
+    await relayState.turnOffAllRelays();
+  } catch (e) {
+    console.error('Initial relay turning off failed: ' + e.message);
+  }
 
   const router = Router();
   router.get('/temp', tempHandler);
