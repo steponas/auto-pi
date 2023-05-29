@@ -112,6 +112,6 @@ export class SerialRelay {
   }
 
   async turnOffAllRelays() {
-    this._writeWithDrain(COMMANDS.RESET_RELAYS);
+    await this._writeWithDrain(COMMANDS.RESET_RELAYS);
   }
 }

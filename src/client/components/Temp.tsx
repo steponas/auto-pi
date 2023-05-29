@@ -1,8 +1,9 @@
 import * as React from 'react';
+import styled from 'styled-components';
 import { getPiData } from '../common/fetch';
+import {RoundCard} from "client/common/RoundCard";
 
 // Inspiration and svg from https://codepen.io/dustindowell/pen/rxjxVp
-
 const numberSvgMap = {
   0: [1, 1, 1, 0, 1, 1, 1], // 0
   1: [0, 0, 1, 0, 0, 1, 0], // 1
@@ -17,9 +18,14 @@ const numberSvgMap = {
   '-': [0, 0, 0, 1, 0, 0, 0],
 };
 
+const Wrapper = styled('div')`
+  margin-bottom: 20px;
+  text-align: center;
+`;
+
 interface SvgStyle {
   opacity: number;
-};
+}
 const gStyle = (isActive): SvgStyle => ({
   opacity: isActive ? 1 : 0.08,
 });
@@ -51,7 +57,7 @@ const Clock = ({ temp }: ClockProps): JSX.Element => {
   }
 
   return (
-    <svg id='clock' width="55" height="32" xmlns='http://www.w3.org/2000/svg'>
+    <svg id='clock' width="55" height="32" xmlns='http://www.w3.org/2000/svg' style={{display: 'inline-block'}}>
       <g>
         <g id="sign">
           <polygon style={gStyle(minus)} points="3,14 9,14 12,16 9,18 3,18 0,16 "/>
@@ -81,6 +87,7 @@ const Clock = ({ temp }: ClockProps): JSX.Element => {
 
 interface State {
   temp?: number;
+  humidity?: number;
 }
 
 export default class Temp extends React.Component<{}, State> {
@@ -96,17 +103,26 @@ export default class Temp extends React.Component<{}, State> {
   async fetchData(): Promise<void> {
     try {
       const data = await getPiData('temp');
-      this.setState({ temp: data.temp });
+      this.setState(data);
     } catch (err) {
       console.log(err);
     }
   }
 
   render(): JSX.Element {
-    const temp = this.state.temp;
+    const {temp} = this.state;
 
-    return <div>
-      <Clock temp={temp} />
-    </div>;
+    return (
+      <Wrapper>
+        <RoundCard>
+          <Clock temp={temp} />
+          <span style={{
+            verticalAlign: 'baseline',
+            fontSize: '20px',
+            lineHeight: '20px',
+          }}>° C</span>
+        </RoundCard>
+      </Wrapper>
+    );
   }
 }

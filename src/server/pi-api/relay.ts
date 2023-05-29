@@ -5,6 +5,7 @@ import {RelayStateStore} from "server/store/relay";
 export interface RelayRequest {
   relayNum: number;
   targetState: boolean;
+  until: string | null;
 }
 
 export const getRelayHandler = (relays: RelayStateStore) => {
@@ -16,7 +17,7 @@ export const getRelayHandler = (relays: RelayStateStore) => {
     }
 
     try {
-      await relays.toggleRelay(data.relayNum, data.targetState);
+      await relays.toggleRelay(data.relayNum, data.targetState, data.until ? new Date(data.until) : null);
       res.json(success());
     } catch (e) {
       logError('Could not toggle relay #%s to state %s: %s', data.relayNum, data.targetState, e.message);

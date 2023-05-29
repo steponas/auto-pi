@@ -1,19 +1,24 @@
 import {SerialRelay} from 'raspberry/serial';
 import {BACK_LAWN_1, BACK_LAWN_2, FRONT_LAWN, GREENHOUSE, POWER_24V, SLOPE} from "../../config/relay-names";
+import {RelayStateResponse} from "common/relays";
 
 interface RelayState {
   enabled: boolean;
+  enabledUntil: Date | null;
   since: Date | null;
+  offTimeout: number | null;
 }
 
-const getRelayState = (enabled: boolean) => ({
+const getRelayState = (enabled: boolean, until: Date | null, timeout: number | null): RelayState => ({
   enabled,
+  enabledUntil: until,
   since: enabled ? new Date() : null,
+  offTimeout: timeout,
 });
 
 export interface RelayStateStore {
-  toggleRelay: (relay: number, state: boolean) => Promise<void>;
-  getState: () => Promise<boolean[]>;
+  toggleRelay: (relay: number, state: boolean, until: Date | null) => Promise<void>;
+  getState: () => Promise<RelayStateResponse[]>;
   turnOffAllRelays: () => Promise<void>;
 }
 
@@ -40,32 +45,52 @@ const getRelaysDependingOn = (relay: number): number[] => {
 
 export const createRelayStore = async (serial: SerialRelay): Promise<RelayStateStore> => {
   const currentState = new Map<number, RelayState>();
-  let lastStateRead: Date | null = null;
 
   const relayState: RelayStateStore = {
-    async toggleRelay(relay: number, on: boolean) {
+    async toggleRelay(relay: number, on: boolean, until: Date | null) {
+      const previousState = currentState.get(relay);
+      if (previousState?.offTimeout) {
+        clearTimeout(previousState.offTimeout);
+      }
       await serial.toggleRelay(relay, on);
-      currentState.set(relay, getRelayState(on));
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      const timeout = on && until ? setRelayOffTimeout(relay, until) : null;
+      currentState.set(relay, getRelayState(on, until, timeout));
       // Handle any relay deps
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
       await handleDependentRelays(relay, on);
     },
     async getState() {
-      const res = await serial.getState();
-      lastStateRead = new Date();
-
-      res.forEach((isOn, relayNum) => {
-        currentState.set(relayNum, getRelayState(isOn));
+      const result: RelayStateResponse[] = [];
+      currentState.forEach((val, relay) => {
+        result[relay] = {
+          enabled: val.enabled,
+          enabledSince: val.since?.toISOString(),
+          enabledUntil: val.enabledUntil?.toISOString(),
+        };
       });
-
-      return res;
+      return result;
     },
     async turnOffAllRelays() {
       await serial.turnOffAllRelays();
       currentState.forEach((value, relay) => {
-        currentState.set(relay, getRelayState(false));
+        if (value.enabled) {
+          relayState.toggleRelay(relay, false, null);
+        }
       });
     }
+  };
+
+  const setRelayOffTimeout = (relay: number, until: Date): number | null => {
+    const ms = until.valueOf() - Date.now();
+    if (ms <= 0) {
+      // Invalid duration.
+      console.error(`Invalid duration "${ms}" for timeout on relay ${relay}`);
+      return null;
+    }
+    return setTimeout(() => {
+      relayState.toggleRelay(relay, false, null);
+    }, ms);
   };
 
   const handleDependentRelays = async (relay: number, wasEnabled: boolean) => {
@@ -80,7 +105,7 @@ export const createRelayStore = async (serial: SerialRelay): Promise<RelayStateS
     }
     if (wasEnabled) {
       // Enable relay right away
-      await relayState.toggleRelay(dependsOn, wasEnabled);
+      await relayState.toggleRelay(dependsOn, wasEnabled, null);
     } else {
       // When disabling, have a timeout so that the relay isn't toggled too often
       //  as a next dependent relay might be turned on soon.
@@ -90,14 +115,17 @@ export const createRelayStore = async (serial: SerialRelay): Promise<RelayStateS
           return currentState.get(depRelay)?.enabled
         });
         if (!hasEnabled) {
-          relayState.toggleRelay(dependsOn, false);
+          relayState.toggleRelay(dependsOn, false, null);
         }
       }, DEPENDENT_RELAY_DEBOUNCE);
     }
   };
 
   // Load initial state
-  await relayState.getState();
+  const res = await serial.getState();
+  res.forEach((isOn, relayNum) => {
+    currentState.set(relayNum, getRelayState(isOn, null, null));
+  });
 
   return relayState;
 }
