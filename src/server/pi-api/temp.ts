@@ -8,4 +8,4 @@ export default async function getTemp(req, res): Promise<void> {
   res.json(
     success({ temp, humidity }),
   );
-};
+}

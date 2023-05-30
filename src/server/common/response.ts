@@ -6,7 +6,7 @@ interface SrvResponse {
     type: string;
     message: string;
   } | null;
-};
+}
 
 export const success = (data?: any): SrvResponse => ({
   status: true,

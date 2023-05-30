@@ -1,73 +1,73 @@
-import { toggleRelay } from 'raspberry/i2c';
-import { log } from 'common/log';  
+import { log } from 'common/log';
 import {
   FRONT_LAWN, BACK_LAWN_1, BACK_LAWN_2, SLOPE,
 } from '../../config/relay-names';
 import { waitFor } from 'common/helpers';
 import { HOURS, MINUTES, SECONDS } from 'common/time';
+import {RelayStateStore} from "server/store/relay";
 
 const jobName = 'Grass Sprinklers';
 
-async function runFrontClose(): Promise<void> {
-  await toggleRelay(FRONT_LAWN, true);
+async function runFrontClose(relayStore: RelayStateStore): Promise<void> {
+  await relayStore.toggleRelay(FRONT_LAWN, true, null);
   await waitFor(30 * SECONDS);
 
-  await toggleRelay(BACK_LAWN_1, true);
+  await relayStore.toggleRelay(BACK_LAWN_1, true, null);
   await waitFor(10 * SECONDS);
 
-  await toggleRelay(BACK_LAWN_2, true);
+  await relayStore.toggleRelay(BACK_LAWN_2, true, null);
 
   await waitFor(10 * MINUTES);
 
   const list = [FRONT_LAWN, BACK_LAWN_1, BACK_LAWN_2];
-  for (let sprinkler of list) {
-    await toggleRelay(sprinkler, false);
+  for (const sprinkler of list) {
+    await relayStore.toggleRelay(sprinkler, false, null);
     await waitFor(5 * SECONDS);
   }
 }
 
-async function runSeparate(): Promise<void> {
+async function runSeparate(relayStore: RelayStateStore): Promise<void> {
   const list = [BACK_LAWN_1, BACK_LAWN_2, FRONT_LAWN];
-  for (let sprinkler of list) {
-    await toggleRelay(sprinkler, true);
+  for (const sprinkler of list) {
+    await relayStore.toggleRelay(sprinkler, true, null);
     await waitFor(30 * MINUTES);
-    await toggleRelay(sprinkler, false);
+    await relayStore.toggleRelay(sprinkler, false, null);
     await waitFor(5 * SECONDS);
   }
 }
 
-async function runBackClose(): Promise<void> {
-  await toggleRelay(BACK_LAWN_1, true);
+async function runBackClose(relayStore: RelayStateStore): Promise<void> {
+  await relayStore.toggleRelay(BACK_LAWN_1, true, null);
   await waitFor(10 * SECONDS);
 
-  await toggleRelay(BACK_LAWN_2, true);
+  await relayStore.toggleRelay(BACK_LAWN_2, true, null);
   await waitFor(30 * MINUTES);
 
   const list = [BACK_LAWN_1, BACK_LAWN_2];
-  for (let sprinkler of list) {
-    await toggleRelay(sprinkler, false);
+  for (const sprinkler of list) {
+    await relayStore.toggleRelay(sprinkler, false, null);
     await waitFor(5 * SECONDS);
   }
 }
 
-async function runSlope(): Promise<void> {
-  await toggleRelay(SLOPE, true);
+async function runSlope(relayStore: RelayStateStore): Promise<void> {
+  await relayStore.toggleRelay(SLOPE, true, null);
   await waitFor(3 * HOURS);
 
-  await toggleRelay(SLOPE, false);
+  await relayStore.toggleRelay(SLOPE, false, null);
 }
 
-const waterLawn = async (): Promise<void> => {
-  log(jobName, 'starting');
+export default (setupJob, relayStore: RelayStateStore): void => {
+  const waterLawn = async (): Promise<void> => {
+    log(jobName, 'starting');
 
-  await runFrontClose();
-  await runSeparate();
-  await runBackClose();
-  await runSlope();
+    await runFrontClose(relayStore);
+    await runSeparate(relayStore);
+    await runBackClose(relayStore);
+    await runSlope(relayStore);
 
-  log(jobName, 'done');
-};
+    log(jobName, 'done');
+  };
 
-export default (setupJob): void => {
   setupJob(jobName, '0 0 3 * * 2,6', waterLawn, false);
 };

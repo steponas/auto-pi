@@ -1,5 +1,4 @@
-/* eslint import/no-extraneous-dependencies:0 */
-import * as express from 'express';
+import express from 'express';
 import { join } from 'path';
 import * as expressStaticGzip from 'express-static-gzip';
 import { name } from '../../package.json';
@@ -7,13 +6,24 @@ import { getPiApiRouter } from './pi-api';
 import setupJobs from './jobs';
 import { readJsonSync } from 'server/common/read-json';
 import { generateTemplate } from './templates/index.html';
-
-// Start cron jobs
-setupJobs();
+import {SerialRelay} from "raspberry/serial";
+import {createRelayStore} from "server/store/relay";
 
 const setupHttp = async () => {
   const app = express();
   app.use(express.json());
+
+  const serial = new SerialRelay();
+  const relayState = await createRelayStore(serial);
+  // Turn off relays after the server starts, for a clean state.
+  try {
+    await relayState.turnOffAllRelays();
+  } catch (e) {
+    console.error('Initial relay turning off failed: ' + e.message);
+  }
+
+  // Start cron jobs
+  setupJobs(relayState);
 
   // Raspberry Pi command API
   app.use(
@@ -22,7 +32,7 @@ const setupHttp = async () => {
       res.setHeader('Cache-Control', 'public, max-age=0');
       next();
     },
-    await getPiApiRouter(),
+    getPiApiRouter(relayState),
   );
 
   const assetManifest = readJsonSync(join(__dirname, 'client/assets-manifest.json'));
@@ -33,7 +43,9 @@ const setupHttp = async () => {
   });
 
   // Index page html content
-  app.get('/', (req, res): void => res.end(indexHtml));
+  app.get('/', (req, res) => {
+    res.end(indexHtml);
+  });
 
   // The single static file - precompiled client.js app
   app.use('/static', expressStaticGzip(join(__dirname, 'client'), {

@@ -14,4 +14,4 @@ export async function handleTempHistory(req, res): Promise<void> {
       error: err.message,
     });
   }
-};
+}

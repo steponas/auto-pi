@@ -42,7 +42,7 @@ export class SerialRelay {
 
   async _writeWithDrain(...chunks: (string | Buffer)[]) {
     return new Promise<void>((resolve, reject) => {
-      for (let c of chunks) {
+      for (const c of chunks) {
         this.serialport.write(c);
         debug(`wrote ${c}`);
       }
@@ -94,7 +94,7 @@ export class SerialRelay {
         resolve(result);
       });
       parser.on('error', (err) => {
-        reject(new Error('Got error during relay state parsing'));
+        reject(new Error('Got error during relay state parsing: ' + err.message));
       });
 
       try {

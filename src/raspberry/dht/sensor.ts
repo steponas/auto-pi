@@ -1,5 +1,3 @@
-// On not-raspberry env the 'node-dht-sensor' is not found
-// @ts-ignore
 import * as sensor from 'node-dht-sensor';
 import { waitFor } from 'common/helpers';
 import { log } from 'common/log';
