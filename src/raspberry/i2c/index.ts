@@ -54,7 +54,7 @@ export const turnAllOff = async (): Promise<void> => {
 
 export interface RelayState {
   [index: number]: boolean;
-};
+}
 // Get state for all board's relays
 export const getState = async(): Promise<RelayState> => {
   const states = {

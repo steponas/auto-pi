@@ -39,7 +39,7 @@ const Info = styled('div')`
 
 const REFETCH_TIME = 10 * SECONDS;
 
-export default class Relays extends React.Component<{}, State> {
+export default class Relays extends React.Component<any, State> {
   refetchTimeout: number;
 
   constructor(props) {

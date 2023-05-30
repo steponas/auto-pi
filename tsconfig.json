@@ -8,6 +8,7 @@
     "target": "es6",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
       "server/*": ["src/server/*"],

@@ -90,7 +90,7 @@ interface State {
   humidity?: number;
 }
 
-export default class Temp extends React.Component<{}, State> {
+export default class Temp extends React.Component<any, State> {
   constructor(props) {
     super(props);
     this.state = {};
