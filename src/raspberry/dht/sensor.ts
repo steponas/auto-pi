@@ -4,7 +4,7 @@ import { log } from 'common/log';
 import { gpioLock } from 'common/gpio';
 
 const TYPE = 22;
-const GPIO = 10;
+const GPIO = 4;
 
 interface SensorData {
   temp: number;
@@ -33,38 +33,22 @@ const read = async (): Promise<SensorData> => {
   }
 };
 
-const AVG_READS = 3;
-const WAIT = 2500;
+const MAX_READS = 3;
+const WAIT = 5000;
 // Returns the average of some sensor reads
 export const readSensorData = async (): Promise<SensorData> => {
   let reads = 0;
-  let temp = 0;
-  let humidity = 0;
-  let initial = true;
-  do {
+  while (reads < MAX_READS) {
+    reads += 1;
     try {
       const data = await read();
-
-      if (initial) {
-        // Seems like the sensor returns the previous read value when measuring
-        // the first time in a while. Just skip the first result.
-        initial = false;
-        continue;
-      }
-
-      reads += 1;
-
-      temp += data.temp;
-      humidity += data.humidity;
+      return data;
     } catch (err) {
       // skip error.
       log(`DHT read error: ${err}`);
     }
     await waitFor(WAIT);
-  } while (reads < AVG_READS);
+  }
 
-  return {
-    temp: Math.round(temp / AVG_READS),
-    humidity: Math.round(humidity / AVG_READS),
-  };
+  throw new Error('Failed to read DHT sensor data, no value returned');
 };

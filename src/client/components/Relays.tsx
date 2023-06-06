@@ -147,10 +147,10 @@ export default class Relays extends React.Component<any, State> {
           })
         }
         <RelayDurationModal
-          open={!!relayToPickTimeFor}
+          open={relayToPickTimeFor != null}
           onClose={() => this.setState({relayToPickTimeFor: null})}
           onSelect={(minutes) => {
-            if (relayToPickTimeFor) {
+            if (relayToPickTimeFor != null) {
               this.toggle(relayToPickTimeFor, true, moment().add(minutes, 'minutes').toDate());
             }
             this.setState({relayToPickTimeFor: null});

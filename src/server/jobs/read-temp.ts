@@ -6,16 +6,16 @@ import { storeSensorData } from 'server/store';
 const jobName = 'readTemp';
 
 const readTemp = async (): Promise<void> => {
-  const { temp, humidity } = await readSensorData();
-  state.set(KEY_TEMP_SENSOR, {
-    temp,
-    humidity,
-    time: Date.now(),
-  });
-
-  log(jobName, `read done - temp ${temp}, humidity ${humidity}`);
-
   try {
+    const { temp, humidity } = await readSensorData();
+    state.set(KEY_TEMP_SENSOR, {
+      temp,
+      humidity,
+      time: Date.now(),
+    });
+
+    log(jobName, `read done - temp ${temp}, humidity ${humidity}`);
+
     await storeSensorData(temp, humidity);
   } catch (err) {
     error(`Could not store temp data: ${err.message}`);
