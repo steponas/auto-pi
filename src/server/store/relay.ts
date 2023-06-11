@@ -1,6 +1,7 @@
 import {SerialRelay} from 'raspberry/serial';
-import {BACK_LAWN_1, BACK_LAWN_2, FRONT_LAWN, GREENHOUSE, POWER_24V, SLOPE} from "../../config/relay-names";
+import {BACK_LAWN_1, BACK_LAWN_2, FRONT_LAWN, GREENHOUSE, POWER_24V, relayNames, SLOPE} from "../../config/relay-names";
 import {RelayStateResponse} from "common/relays";
+import {relayHistoryStore} from './index';
 
 interface RelayState {
   enabled: boolean;
@@ -53,6 +54,18 @@ export const createRelayStore = async (serial: SerialRelay): Promise<RelayStateS
         clearTimeout(previousState.offTimeout);
       }
       await serial.toggleRelay(relay, on);
+      if (!on && previousState?.since) {
+        // Log relay state
+        relayHistoryStore.store({
+          relay,
+          relayName: relayNames[relay] ?? 'Unknown name',
+          enabled: previousState.since,
+          disabled: new Date(),
+        }).catch(err => {
+          // Error. Oops.
+          console.error('Failed to store relay history: ' + err.message);
+        });
+      }
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
       const timeout = on && until ? setRelayOffTimeout(relay, until) : null;
       currentState.set(relay, getRelayState(on, until, timeout));
