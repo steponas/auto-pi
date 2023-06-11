@@ -1,7 +1,7 @@
 import { CronJob } from 'cron';
 import { log } from 'common/log';
 import readTempJob from './read-temp';
-// import grassSprinklersJob from './grass-sprinklers-simple';
+import grassSprinklersJob from './grass-sprinklers-simple';
 // import greenhouseJob from './greenhouse';
 import {RelayStateStore} from "server/store/relay";
 // import xmasLights from './xmas-lights';
@@ -24,7 +24,7 @@ const setupJob = (name, cronTime, jobFn, runOnInit = true): void => {
 // Start jobs
 export default (relayStore: RelayStateStore): void => {
   readTempJob(setupJob);
-  // grassSprinklersJob(setupJob, relayStore);
+  grassSprinklersJob(setupJob, relayStore);
   // greenhouseJob(setupJob, relayStore);
   // xmasLights(setupJob, relayStore);
 };

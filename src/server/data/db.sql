@@ -22,6 +22,6 @@ CREATE TABLE IF NOT EXISTS `relay_history` (
 CREATE TABLE IF NOT EXISTS `state` (
   `name` VARCHAR(100),
   `updated` datetime NOT NULL,
-  `data` smallint unsigned NOT NULL,
+  `data` JSON NOT NULL,
   PRIMARY KEY (`name`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
